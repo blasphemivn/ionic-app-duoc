@@ -1,0 +1,95 @@
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    opacity: 0; 
+
+    img {
+        max-width: 70%;
+        height: auto;
+    }
+}
+
+.recovery-section {
+    text-align: center;
+    margin-top: 16px;
+    
+    ion-button {
+        --color: var(--ion-color-medium);
+        font-size: 14px;
+        text-transform: none;
+        
+        &:hover:not([disabled]) {
+            --color: var(--ion-color-primary);
+        }
+    }
+}
+
+.version-info {
+    text-align: center;
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 16px;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 30px;
+    opacity: 0; 
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+    }
+}
+
+.form-container {
+    opacity: 0; 
+}
+
+
+.error-message {
+    display: block;
+    font-size: 0.8em;
+    margin-top: 4px;
+    margin-left: 16px;
+    color: var(--ion-color-danger);
+}
+
+
+ion-input.error {
+    --border-color: var(--ion-color-danger);
+    --highlight-color: var(--ion-color-danger);
+}
+
+
+ion-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+.login-spinner {
+    margin-right: 8px;
+    --color: white;
+}
+
+// animaciones suaves para transiciones
+ion-button {
+    transition: all 0.3s ease;
+}
+
+ion-input {
+    transition: all 0.3s ease;
+}
+
+// efecto de hover para el botón
+ion-button:not([disabled]):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,108 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="hardware-chip" class="header-icon"></ion-icon>
+      MORK TEC
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" #homeContainer>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">
+        <ion-icon name="hardware-chip" class="header-icon"></ion-icon>
+        MORK TEC
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="ecommerce-container">
+    <!-- seccion del header -->
+    <div class="store-header">
+      <h1>Componentes de PC y Periféricos</h1>
+      <p>Encuentra las mejores partes para armar tu PC gaming o de trabajo</p>
+    </div>
+
+    <!-- barra de busqueda -->
+    <div class="search-section">
+      <ion-searchbar 
+        placeholder="Buscar componentes..." 
+        (ionInput)="onSearchChange($event)"
+        show-clear-button="focus">
+      </ion-searchbar>
+    </div>
+
+    <!-- grid de productos -->
+    <div class="products-section" #productsGrid>
+      <div class="section-header">
+        <h2>stock disponible</h2>
+        <span class="product-count">{{ filteredProducts.length }} productos</span>
+      </div>
+
+      <ion-grid class="products-grid">
+        <ion-row>
+          <ion-col 
+            size="12" 
+            size-md="6" 
+            size-lg="4" 
+            *ngFor="let product of filteredProducts; trackBy: trackByProductId">
+            
+            <ion-card class="product-card" (click)="viewProduct(product)">
+              <div class="product-image-container">
+                <ion-img 
+                  [src]="product.image" 
+                  [alt]="product.name"
+                  class="product-image">
+                </ion-img>
+                <div class="product-badges">
+                  <span class="category-badge">{{ product.category }}</span>
+                  <span 
+                    class="stock-badge" 
+                    [class.in-stock]="product.inStock"
+                    [class.out-of-stock]="!product.inStock">
+                    {{ product.inStock ? 'En Stock' : 'Agotado' }}
+                  </span>
+                </div>
+              </div>
+
+              <ion-card-header>
+                <ion-card-title class="product-title">{{ product.name }}</ion-card-title>
+              </ion-card-header>
+
+              <ion-card-content>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-price">
+                  <span class="price">${{ product.price | number:'1.2-2' }}</span>
+                </div>
+                
+                <div class="product-actions">
+                  <ion-button 
+                    expand="block" 
+                    color="primary" 
+                    [disabled]="!product.inStock"
+                    (click)="addToCart(product); $event.stopPropagation()">
+                    <ion-icon name="cart" slot="start"></ion-icon>
+                    {{ product.inStock ? 'Agregar al Carrito' : 'Agotado' }}
+                  </ion-button>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- mensaje de no resultados -->
+      <div class="no-results" *ngIf="filteredProducts.length === 0">
+        <ion-icon name="search-outline" class="no-results-icon"></ion-icon>
+        <h3>No se encontraron productos</h3>
+
+        
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,76 @@
+<div class="login-container" #loginContainer>
+  <div class="logo-container" #logoContainer>
+    <img src="../../assets/img/image.png" alt="Logo" class="logo-img" />
+  </div>
+
+  <div class="form-container" #formContainer>
+    <form (submit)="login()">
+      <div>
+        <ion-item>
+          <ion-input 
+            label="Email" 
+            type="email" 
+            [(ngModel)]="email" 
+            name="email" 
+            placeholder="email@domain.com"
+            (ionInput)="onEmailChange()"
+            [class.error]="emailError"
+            [disabled]="isLoading">
+          </ion-input>
+        </ion-item>
+        <ion-label *ngIf="emailError" color="danger" class="error-message">
+          {{ emailError }}
+        </ion-label>
+    
+        <ion-item class="ion-margin-top">
+          <ion-input 
+            type="password" 
+            label="Contraseña" 
+            [(ngModel)]="password" 
+            name="password" 
+            placeholder="Ingresa tu contraseña"
+            (ionInput)="onPasswordChange()"
+            [class.error]="passwordError"
+            [disabled]="isLoading">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+        </ion-item>
+        <ion-label *ngIf="passwordError" color="danger" class="error-message">
+          {{ passwordError }}
+        </ion-label>
+      </div>
+
+      <ion-button 
+        expand="block" 
+        type="submit" 
+        [disabled]="!isFormValid || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent" class="login-spinner"></ion-spinner>
+        <span *ngIf="!isLoading">Iniciar sesión</span>
+        <span *ngIf="isLoading">Iniciando sesión...</span>
+      </ion-button>
+    </form>
+
+    <div class="recovery-section">
+      <ion-button 
+        fill="clear" 
+        color="medium" 
+        (click)="goToPasswordRecovery()"
+        [disabled]="isLoading">
+        ¿Olvidaste tu contraseña?
+      </ion-button>
+    </div>
+
+    <div class="version-info">
+      <span>
+        Versión 1.0.0
+      </span>
+    </div>
+  </div>
+</div>
+
+<ion-toast
+    [isOpen]="isToastOpen"
+    [message]="toastMessage"
+    [duration]="5000"
+    (didDismiss)="isToastOpen = false"
+  ></ion-toast>

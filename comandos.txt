@@ -1,0 +1,12 @@
+- instalar node
+- npm install -g @ionic/cli
+- npm install
+- ionic generate page login
+
+
+Componentes
+https://ionicframework.com/docs/components
+
+Add Android
+ionic cap add android
+ionic cap sync android

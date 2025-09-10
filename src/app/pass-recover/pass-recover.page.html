@@ -1,0 +1,102 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recuperar Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Recuperar Contraseña</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="recovery-container">
+    <div class="recovery-content">
+      <div class="recovery-header">
+        <h2>Recuperar Contraseña</h2>
+        <p>Ingresa tus datos para recuperar tu contraseña</p>
+      </div>
+
+      <form (submit)="submitRecovery()">
+        <ion-item>
+          <ion-input 
+            label="Email" 
+            type="email" 
+            [(ngModel)]="email" 
+            name="email" 
+            placeholder="email@domain.com"
+            (ionInput)="onEmailChange()"
+            [class.error]="emailError"
+            [disabled]="isLoading">
+          </ion-input>
+        </ion-item>
+        <ion-label *ngIf="emailError" color="danger" class="error-message">
+          {{ emailError }}
+        </ion-label>
+
+        <ion-item class="ion-margin-top">
+          <ion-input 
+            label="Nombre completo" 
+            type="text" 
+            [(ngModel)]="name" 
+            name="name" 
+            placeholder="Ingresa tu nombre completo"
+            (ionInput)="onNameChange()"
+            [class.error]="nameError"
+            [disabled]="isLoading">
+          </ion-input>
+        </ion-item>
+        <ion-label *ngIf="nameError" color="danger" class="error-message">
+          {{ nameError }}
+        </ion-label>
+
+        <ion-item class="ion-margin-top">
+          <ion-input 
+            label="Número de teléfono" 
+            type="tel" 
+            [(ngModel)]="phone" 
+            name="phone" 
+            placeholder="Ingresa tu número de teléfono"
+            (ionInput)="onPhoneChange()"
+            [class.error]="phoneError"
+            [disabled]="isLoading">
+          </ion-input>
+        </ion-item>
+        <ion-label *ngIf="phoneError" color="danger" class="error-message">
+          {{ phoneError }}
+        </ion-label>
+
+        <ion-button 
+          expand="block" 
+          type="submit" 
+          [disabled]="!isFormValid || isLoading"
+          class="ion-margin-top">
+          <ion-spinner *ngIf="isLoading" name="crescent" class="recovery-spinner"></ion-spinner>
+          <span *ngIf="!isLoading">Enviar Solicitud</span>
+          <span *ngIf="isLoading">Enviando...</span>
+        </ion-button>
+      </form>
+
+      <div class="back-to-login">
+        <ion-button 
+          fill="clear" 
+          color="medium" 
+          (click)="goBackToLogin()"
+          [disabled]="isLoading">
+          Volver al inicio de sesión
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <ion-toast
+    [isOpen]="isToastOpen"
+    [message]="toastMessage"
+    [duration]="5000"
+    (didDismiss)="isToastOpen = false">
+  </ion-toast>
+</ion-content>

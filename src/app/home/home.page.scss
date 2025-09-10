@@ -1,0 +1,335 @@
+// CONTENEDOR DE LA PAGINA
+.ecommerce-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 1;
+}
+
+// HEADER
+.store-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 24px 0;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  border-radius: 16px;
+  color: white;
+  
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    font-size: 18px;
+    margin: 0;
+    opacity: 0.9;
+  }
+}
+
+// ICONO DEL HEADER
+.header-icon {
+  margin-right: 8px;
+  font-size: 1.2em;
+}
+
+// barra de búsqueda
+.search-section {
+  margin-bottom: 24px;
+  
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --placeholder-color: var(--ion-color-medium);
+    --icon-color: var(--ion-color-primary);
+  }
+}
+
+// SECCION DE PRODUCTOS
+.products-section {
+  opacity: 1;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 4px;
+  
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0;
+  }
+  
+  .product-count {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    background: var(--ion-color-light);
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+}
+
+// GRID DE PRODUCTOS
+.products-grid {
+  padding: 0;
+  
+  ion-row {
+    margin: 0 -8px;
+  }
+  
+  ion-col {
+    padding: 8px;
+  }
+}
+
+// CARTA DE PRODUCTOS
+.product-card {
+  margin: 0;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// CONTENEDOR DE LA IMAGEN DEL PRODUCTO
+.product-image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  
+  .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover .product-image {
+    transform: scale(1.05);
+  }
+}
+
+// BADGES DEL PRODUCTO
+.product-badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+  
+  .category-badge {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .stock-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    
+    &.in-stock {
+      background: rgba(40, 167, 69, 0.9);
+      color: white;
+    }
+    
+    &.out-of-stock {
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+    }
+  }
+}
+
+// CONTENIDO DEL PRODUCTO
+ion-card-header {
+  padding: 16px 16px 8px 16px;
+  
+  .product-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    line-height: 1.3;
+    margin: 0;
+  }
+}
+
+ion-card-content {
+  padding: 8px 16px 16px 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  
+  .product-description {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .product-price {
+    margin-bottom: 16px;
+    
+    .price {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  .product-actions {
+    margin-top: auto;
+    
+    ion-button {
+      --border-radius: 8px;
+      font-weight: 600;
+      height: 40px;
+      
+      &[disabled] {
+        --opacity: 0.5;
+      }
+    }
+  }
+}
+
+// sin resultados
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  
+  .no-results-icon {
+    font-size: 64px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    font-size: 20px;
+    color: var(--ion-color-dark);
+    margin: 0 0 8px 0;
+  }
+  
+  p {
+    font-size: 16px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+// diseño responsive
+@media (max-width: 768px) {
+  .ecommerce-container {
+    padding: 12px;
+  }
+  
+  .store-header {
+    padding: 20px 16px;
+    margin-bottom: 24px;
+    
+    h1 {
+      font-size: 24px;
+    }
+    
+    p {
+      font-size: 16px;
+    }
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    
+    h2 {
+      font-size: 20px;
+    }
+  }
+  
+  .products-grid {
+    ion-row {
+      margin: 0 -4px;
+    }
+    
+    ion-col {
+      padding: 4px;
+    }
+  }
+  
+  .product-image-container {
+    height: 180px;
+  }
+}
+
+// animaciones
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// cargando
+ion-refresher-content {
+  --color: var(--ion-color-primary);
+}
+
+// scrollbar personalizado
+ion-content {
+  --offset-bottom: 0px;
+}
+
+
+.product-card:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+// accesibilidad
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .product-image,
+  ion-button {
+    transition: none;
+  }
+  
+  .product-card:hover {
+    transform: none;
+  }
+  
+  .product-image-container:hover .product-image {
+    transform: none;
+  }
+}
