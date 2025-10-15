@@ -26,11 +26,32 @@
     }
 }
 
+.dev-tools {
+    text-align: center;
+    margin-top: 16px;
+    padding: 8px;
+    border-top: 1px solid var(--ion-color-light);
+    
+    ion-button {
+        margin: 0 4px;
+        font-size: 12px;
+        --color: var(--ion-color-medium);
+        
+        &[color="tertiary"] {
+            --color: var(--ion-color-tertiary);
+        }
+        
+        &[color="danger"] {
+            --color: var(--ion-color-danger);
+        }
+    }
+}
+
 .version-info {
     text-align: center;
     font-size: 0.8em;
     color: #888;
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 .login-container {
@@ -50,6 +71,33 @@
 
 .form-container {
     opacity: 0; 
+}
+
+.mode-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    background: var(--ion-color-light);
+    border-radius: 12px;
+    padding: 4px;
+    
+    ion-button {
+        flex: 1;
+        margin: 0;
+        --border-radius: 8px;
+        font-weight: 500;
+        text-transform: none;
+        
+        &[color="primary"] {
+            --background: white;
+            --color: var(--ion-color-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        &[color="medium"] {
+            --color: var(--ion-color-medium);
+        }
+    }
 }
 
 
@@ -88,8 +136,23 @@ ion-input {
     transition: all 0.3s ease;
 }
 
+// animación suave para el toggle
+.mode-toggle {
+    transition: all 0.3s ease;
+}
+
+// animación para los campos que aparecen/desaparecen
+ion-item {
+    transition: all 0.3s ease;
+}
+
 // efecto de hover para el botón
 ion-button:not([disabled]):hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// estilo para el formulario de registro
+form {
+    transition: all 0.3s ease;
 }

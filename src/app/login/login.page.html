@@ -4,7 +4,25 @@
   </div>
 
   <div class="form-container" #formContainer>
-    <form (submit)="login()">
+    <!-- Toggle entre login y registro -->
+    <div class="mode-toggle">
+      <ion-button 
+        fill="clear" 
+        [color]="!isRegisterMode ? 'primary' : 'medium'"
+        (click)="toggleMode()"
+        [disabled]="isLoading">
+        Iniciar Sesión
+      </ion-button>
+      <ion-button 
+        fill="clear" 
+        [color]="isRegisterMode ? 'primary' : 'medium'"
+        (click)="toggleMode()"
+        [disabled]="isLoading">
+        Registrarse
+      </ion-button>
+    </div>
+
+    <form (submit)="isRegisterMode ? register() : login()">
       <div>
         <ion-item>
           <ion-input 
@@ -38,6 +56,24 @@
         <ion-label *ngIf="passwordError" color="danger" class="error-message">
           {{ passwordError }}
         </ion-label>
+
+        <!-- Campo de confirmación de contraseña (solo en modo registro) -->
+        <ion-item class="ion-margin-top" *ngIf="isRegisterMode">
+          <ion-input 
+            type="password" 
+            label="Confirmar Contraseña" 
+            [(ngModel)]="confirmPassword" 
+            name="confirmPassword" 
+            placeholder="Confirma tu contraseña"
+            (ionInput)="onConfirmPasswordChange()"
+            [class.error]="confirmPasswordError"
+            [disabled]="isLoading">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+        </ion-item>
+        <ion-label *ngIf="confirmPasswordError && isRegisterMode" color="danger" class="error-message">
+          {{ confirmPasswordError }}
+        </ion-label>
       </div>
 
       <ion-button 
@@ -45,18 +81,39 @@
         type="submit" 
         [disabled]="!isFormValid || isLoading">
         <ion-spinner *ngIf="isLoading" name="crescent" class="login-spinner"></ion-spinner>
-        <span *ngIf="!isLoading">Iniciar sesión</span>
-        <span *ngIf="isLoading">Iniciando sesión...</span>
+        <span *ngIf="!isLoading && !isRegisterMode">Iniciar sesión</span>
+        <span *ngIf="!isLoading && isRegisterMode">Registrarse</span>
+        <span *ngIf="isLoading && !isRegisterMode">Iniciando sesión...</span>
+        <span *ngIf="isLoading && isRegisterMode">Registrando...</span>
       </ion-button>
     </form>
 
-    <div class="recovery-section">
+    <!-- Sección de recuperación de contraseña (solo en modo login) -->
+    <div class="recovery-section" *ngIf="!isRegisterMode">
       <ion-button 
         fill="clear" 
         color="medium" 
         (click)="goToPasswordRecovery()"
         [disabled]="isLoading">
         ¿Olvidaste tu contraseña?
+      </ion-button>
+    </div>
+
+    <!-- Botones de desarrollo (solo para testing) -->
+    <div class="dev-tools" *ngIf="!isLoading">
+      <ion-button 
+        fill="clear" 
+        color="tertiary" 
+        size="small"
+        (click)="showRegisteredUsers()">
+        👥 Ver usuarios
+      </ion-button>
+      <ion-button 
+        fill="clear" 
+        color="danger" 
+        size="small"
+        (click)="clearAllUsers()">
+        🗑️ Limpiar datos
       </ion-button>
     </div>
 

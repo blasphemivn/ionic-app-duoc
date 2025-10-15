@@ -13,7 +13,8 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./login/login.page').then( m => m.LoginPage)
-  },  {
+  },
+  {
     path: 'pass-recover',
     loadComponent: () => import('./pass-recover/pass-recover.page').then( m => m.PassRecoverPage)
   },
