@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, AnimationController } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
+import { UserStorageService } from '../services/user-storage.service';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons, AnimationController } from '@ionic/angular/standalone';
 
 // interfaz para los productos
 interface Product {
@@ -17,7 +19,7 @@ interface Product {
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [CommonModule, DecimalPipe, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent],
+  imports: [CommonModule, DecimalPipe, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons],
 })
 export class HomePage implements OnInit {
   @ViewChild('homeContainer', { read: ElementRef }) homeContainer!: ElementRef;
@@ -27,7 +29,11 @@ export class HomePage implements OnInit {
   filteredProducts: Product[] = [];
   searchTerm: string = '';
 
-  constructor(private animationCtrl: AnimationController) {}
+  constructor(
+    private animationCtrl: AnimationController,
+    private router: Router,
+    private userStorageService: UserStorageService
+  ) {}
 
   ngOnInit() {
     this.loadProducts();
@@ -158,6 +164,15 @@ export class HomePage implements OnInit {
   // funcion trackBy para optimizar el rendimiento del ngFor
   trackByProductId(index: number, product: Product): number {
     return product.id;
+  }
+
+  // Método para cerrar sesión
+  logout() {
+    // Eliminar el usuario actual
+    this.userStorageService.clearCurrentUser();
+    console.log('Sesión cerrada');
+    // Redirigir al login
+    this.router.navigateByUrl('/login');
   }
 
   // animación de entrada para la home page

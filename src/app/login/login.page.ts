@@ -38,14 +38,14 @@ export class LoginPage implements OnInit {
     private userStorageService: UserStorageService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     // animación de entrada cuando se carga la página
     setTimeout(() => {
       this.playEnterAnimation();
     }, 100);
 
     // Mostrar estadísticas de usuarios en consola (para desarrollo)
-    this.showUserStats();
+    await this.showUserStats();
   }
 
   // animación de entradaa
@@ -181,17 +181,14 @@ export class LoginPage implements OnInit {
     setTimeout(async () => {
       try {
         // Verificar credenciales con usuarios guardados
-        const user = this.userStorageService.validateUser(this.email, this.password);
+        const user = await this.userStorageService.validateUser(this.email, this.password);
         
         // También permitir el usuario por defecto
         const isDefaultUser = this.email === 'seba@gmail.com' && this.password === '123456';
         
         if (user || isDefaultUser) {
           // Guardar sesión activa
-          localStorage.setItem('current_user', JSON.stringify({
-            email: this.email,
-            loginTime: new Date().toISOString()
-          }));
+          await this.userStorageService.saveCurrentUser(this.email);
           
           console.log('Login exitoso');
           // reproducir animación de salida antes de navegar
@@ -250,7 +247,7 @@ export class LoginPage implements OnInit {
     setTimeout(async () => {
       try {
         // Verificar si el email ya existe
-        if (this.userStorageService.emailExists(this.email)) {
+        if (await this.userStorageService.emailExists(this.email)) {
           this.isLoading = false;
           this.toastMessage = 'Este email ya está registrado';
           this.isToastOpen = true;
@@ -258,7 +255,7 @@ export class LoginPage implements OnInit {
         }
 
         // Guardar nuevo usuario
-        const newUser = this.userStorageService.saveUser({
+        const newUser = await this.userStorageService.saveUser({
           email: this.email,
           password: this.password
         });
@@ -284,8 +281,8 @@ export class LoginPage implements OnInit {
   }
 
   // Mostrar estadísticas de usuarios (para desarrollo)
-  showUserStats() {
-    const stats = this.userStorageService.getUserStats();
+  async showUserStats() {
+    const stats = await this.userStorageService.getUserStats();
     console.log('📊 Estadísticas de usuarios:', {
       totalUsuarios: stats.totalUsers,
       ultimoRegistro: stats.lastRegistered?.toLocaleString() || 'Ninguno'
@@ -293,9 +290,9 @@ export class LoginPage implements OnInit {
   }
 
   // Método para limpiar todos los usuarios (para testing)
-  clearAllUsers() {
+  async clearAllUsers() {
     if (confirm('¿Estás seguro de que quieres eliminar todos los usuarios registrados?')) {
-      this.userStorageService.clearAllUsers();
+      await this.userStorageService.clearAllUsers();
       this.toastMessage = 'Todos los usuarios han sido eliminados';
       this.isToastOpen = true;
       console.log('🗑️ Todos los usuarios eliminados');
@@ -303,8 +300,8 @@ export class LoginPage implements OnInit {
   }
 
   // Método para mostrar usuarios registrados (para desarrollo)
-  showRegisteredUsers() {
-    const users = this.userStorageService.getUsers();
+  async showRegisteredUsers() {
+    const users = await this.userStorageService.getUsers();
     console.log('👥 Usuarios registrados:', users.map(u => ({
       email: u.email,
       fechaRegistro: u.createdAt.toLocaleString()

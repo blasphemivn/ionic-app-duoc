@@ -1,117 +1,87 @@
 import { Injectable } from '@angular/core';
-
-export interface User {
-  id: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-}
+import { SqliteService, User, UserWithDate } from './sqlite.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserStorageService {
-  private readonly STORAGE_KEY = 'ionic_app_users';
-
-  constructor() { }
-
-  // Obtener todos los usuarios
-  getUsers(): User[] {
-    const usersJson = localStorage.getItem(this.STORAGE_KEY);
-    if (usersJson) {
-      try {
-        const users = JSON.parse(usersJson);
-        // Convertir las fechas de string a Date
-        return users.map((user: any) => ({
-          ...user,
-          createdAt: new Date(user.createdAt)
-        }));
-      } catch (error) {
-        console.error('Error al parsear usuarios:', error);
-        return [];
-      }
-    }
-    return [];
+  constructor(private sqliteService: SqliteService) {
+    console.log('📱 UserStorageService inicializado');
   }
 
-  // Guardar un nuevo usuario
-  saveUser(user: Omit<User, 'id' | 'createdAt'>): User {
-    const users = this.getUsers();
-    
-    // Verificar si el email ya existe
-    const existingUser = users.find(u => u.email === user.email);
-    if (existingUser) {
-      throw new Error('Este email ya está registrado');
-    }
+  // Obtener todos los usuarios
+  async getUsers(): Promise<UserWithDate[]> {
+    const users = await this.sqliteService.getUsers();
+    // convertir las fechas de string a Date
+    return users.map(user => ({
+      ...user,
+      createdAt: new Date(user.createdAt)
+    }));
+  }
 
-    // Crear nuevo usuario
-    const newUser: User = {
-      id: this.generateId(),
-      email: user.email,
-      password: user.password,
-      createdAt: new Date()
+  // guardar un nuevo usuario
+  async saveUser(user: Omit<User, 'id' | 'createdAt'>): Promise<UserWithDate> {
+    const savedUser = await this.sqliteService.saveUser(user);
+    return {
+      ...savedUser,
+      createdAt: new Date(savedUser.createdAt)
     };
-
-    // Agregar a la lista
-    users.push(newUser);
-    
-    // Guardar en localStorage
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(users));
-    
-    return newUser;
   }
 
   // Verificar credenciales de login
-  validateUser(email: string, password: string): User | null {
-    const users = this.getUsers();
-    const user = users.find(u => u.email === email && u.password === password);
-    return user || null;
+  async validateUser(email: string, password: string): Promise<UserWithDate | null> {
+    const user = await this.sqliteService.validateUser(email, password);
+    if (user) {
+      return {
+        ...user,
+        createdAt: new Date(user.createdAt)
+      };
+    }
+    return null;
   }
 
   // Verificar si un email existe
-  emailExists(email: string): boolean {
-    const users = this.getUsers();
-    return users.some(u => u.email === email);
+  async emailExists(email: string): Promise<boolean> {
+    return await this.sqliteService.emailExists(email);
   }
 
   // Obtener usuario por email
-  getUserByEmail(email: string): User | null {
-    const users = this.getUsers();
-    return users.find(u => u.email === email) || null;
+  async getUserByEmail(email: string): Promise<UserWithDate | null> {
+    const user = await this.sqliteService.getUserByEmail(email);
+    if (user) {
+      return {
+        ...user,
+        createdAt: new Date(user.createdAt)
+      };
+    }
+    return null;
   }
 
   // Eliminar un usuario (para testing)
-  deleteUser(email: string): boolean {
-    const users = this.getUsers();
-    const filteredUsers = users.filter(u => u.email !== email);
-    
-    if (filteredUsers.length < users.length) {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredUsers));
-      return true;
-    }
-    return false;
+  async deleteUser(email: string): Promise<boolean> {
+    return await this.sqliteService.deleteUser(email);
   }
 
   // Limpiar todos los usuarios (para testing)
-  clearAllUsers(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  // Generar ID único
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  async clearAllUsers(): Promise<void> {
+    await this.sqliteService.clearAllUsers();
   }
 
   // Obtener estadísticas
-  getUserStats(): { totalUsers: number; lastRegistered: Date | null } {
-    const users = this.getUsers();
-    const lastRegistered = users.length > 0 
-      ? new Date(Math.max(...users.map(u => u.createdAt.getTime())))
-      : null;
-    
-    return {
-      totalUsers: users.length,
-      lastRegistered
-    };
+  async getUserStats(): Promise<{ totalUsers: number; lastRegistered: Date | null }> {
+    return await this.sqliteService.getUserStats();
+  }
+
+  // Métodos para manejar la sesión del usuario actual
+  async saveCurrentUser(email: string): Promise<void> {
+    await this.sqliteService.saveCurrentUser(email);
+  }
+
+  getCurrentUser(): { email: string; loginTime: string } | null {
+    return this.sqliteService.getCurrentUser();
+  }
+
+  clearCurrentUser(): void {
+    this.sqliteService.clearCurrentUser();
   }
 }

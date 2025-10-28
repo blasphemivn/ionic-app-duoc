@@ -1,10 +1,7 @@
 import { Routes } from '@angular/router';
+import { guardGuard } from './guard-guard';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-  },
   {
     path: '',
     redirectTo: 'login',
@@ -17,6 +14,15 @@ export const routes: Routes = [
   {
     path: 'pass-recover',
     loadComponent: () => import('./pass-recover/pass-recover.page').then( m => m.PassRecoverPage)
+  },
+  {
+    path: 'home',
+    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    canActivate: [guardGuard],
+  },
+  {
+    path: '**',
+    redirectTo: 'login',
   },
 
 ];
