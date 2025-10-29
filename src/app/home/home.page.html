@@ -1,29 +1,29 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/profile" color="medium">
+        <ion-icon name="person-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       <ion-icon name="hardware-chip" class="header-icon"></ion-icon>
       MORK TEC
     </ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="logout()" color="danger">
-        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" #homeContainer>
   <ion-header collapse="condense">
     <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button routerLink="/profile" color="medium">
+          <ion-icon name="person-circle-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
       <ion-title size="large">
         <ion-icon name="hardware-chip" class="header-icon"></ion-icon>
         MORK TEC
       </ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="logout()" color="danger">
-          <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 

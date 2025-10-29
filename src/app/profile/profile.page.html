@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="profile-header">
+    <ion-avatar class="avatar">
+      <img [src]="photoUrl() || 'https://cdn-3.expansion.mx/dims4/default/dcc58a6/2147483647/strip/true/crop/362x217+0+0/resize/1200x719!/format/webp/quality/60/?url=https%3A%2F%2Fcherry-brightspot.s3.amazonaws.com%2Fmedia%2F2016%2F01%2F07%2Fselfiemonoderechosdeautor.jpg'" alt="avatar" />
+    </ion-avatar>
+  </div>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>
+        <h2>Email</h2>
+        <p>{{ email }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" (click)="changePhoto()">
+    <ion-icon name="camera-outline" slot="start"></ion-icon>
+    Cambiar foto de perfil
+  </ion-button>
+
+  <ion-button expand="block" color="danger" (click)="logout()">
+    <ion-icon name="log-out-outline" slot="start"></ion-icon>
+    Cerrar sesión
+  </ion-button>
+</ion-content>
+
+

@@ -21,6 +21,11 @@ export const routes: Routes = [
     canActivate: [guardGuard],
   },
   {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.page').then((m) => m.ProfilePage),
+    canActivate: [guardGuard],
+  },
+  {
     path: '**',
     redirectTo: 'login',
   },
