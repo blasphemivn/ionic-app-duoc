@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'ionic-app',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'http'
   }
 };
 
