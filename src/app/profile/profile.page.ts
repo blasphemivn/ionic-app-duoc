@@ -20,7 +20,7 @@ export class ProfilePage implements OnInit {
   // clave usada para almacenar la foto en el almacenamiento local
   private static readonly photoStorageKey = 'profilePhoto';
 
-  constructor(private userStorage: UserStorageService, private router: Router) {}
+  constructor(private userStorage: UserStorageService, private router: Router) { }
 
   // cargar email y foto guardada al iniciar
   async ngOnInit() {
@@ -64,7 +64,7 @@ export class ProfilePage implements OnInit {
   // cerrar sesión y redirigir al login
   logout() {
     this.userStorage.clearCurrentUser();
-    this.router.navigateByUrl('/login', { replaceUrl: true });
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }
 

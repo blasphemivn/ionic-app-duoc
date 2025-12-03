@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi Carrito</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="clearCart()" color="danger" [disabled]="cartItems.length === 0">
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="cartItems.length > 0; else emptyCart">
+    <ion-list>
+      <ion-item *ngFor="let item of cartItems" class="cart-item">
+        <ion-thumbnail slot="start">
+          <img [src]="item.product.image" [alt]="item.product.name">
+        </ion-thumbnail>
+        <ion-label>
+          <h2>{{ item.product.name }}</h2>
+          <p>{{ item.product.price | number:'1.2-2' }}</p>
+        </ion-label>
+        <div class="quantity-controls">
+          <ion-button size="small" fill="outline" (click)="decreaseQuantity(item)">
+            <ion-icon name="remove-outline"></ion-icon>
+          </ion-button>
+          <span>{{ item.quantity }}</span>
+          <ion-button size="small" fill="outline" (click)="increaseQuantity(item)">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
+          <ion-button color="danger" size="small" fill="clear" (click)="removeFromCart(item)">
+            <ion-icon name="trash-bin-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart-container">
+      <ion-icon name="cart-outline" class="empty-cart-icon"></ion-icon>
+      <h2>Tu carrito está vacío</h2>
+      <p>Añade productos para verlos aquí.</p>
+      <ion-button (click)="goBack()" expand="block">Continuar Comprando</ion-button>
+    </div>
+  </ng-template>
+</ion-content>
+
+<ion-footer *ngIf="cartItems.length > 0">
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col size="6">
+          <div class="total">
+            <strong>Total:</strong>
+            <span>{{ total | number:'1.2-2' }}</span>
+          </div>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" (click)="checkout()">
+            Ir a Pagar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

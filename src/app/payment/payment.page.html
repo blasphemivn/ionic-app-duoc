@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cart"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Método de Pago</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="!isLoading">
+    <h2>Selecciona un método de pago</h2>
+
+    <ion-list>
+      <ion-radio-group [(ngModel)]="selectedPaymentMethod">
+        <ion-item>
+          <ion-radio value="credit-card" labelPlacement="end">Tarjeta de Crédito</ion-radio>
+          <ion-icon name="card-outline" slot="start"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-radio value="paypal" labelPlacement="end">PayPal</ion-radio>
+          <ion-icon name="logo-paypal" slot="start"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-radio value="bank-transfer" labelPlacement="end">Transferencia Bancaria</ion-radio>
+          <ion-icon name="business-outline" slot="start"></ion-icon>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+
+    <ion-button expand="block" (click)="simulatePayment()" [disabled]="!selectedPaymentMethod">
+      Pagar ahora
+    </ion-button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Procesando pago...</p>
+  </div>
+
+  <div #successAnimation class="payment-success-animation" style="opacity: 0;">
+    <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+    <p>¡Pago Exitoso!</p>
+  </div>
+</ion-content>

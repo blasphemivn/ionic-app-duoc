@@ -26,30 +26,38 @@ export class LoginPage implements OnInit {
   isLoading: boolean = false;
   isRegisterMode: boolean = false;
 
-  
+
   emailError: string = '';
   passwordError: string = '';
   confirmPasswordError: string = '';
   isFormValid: boolean = false;
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private animationCtrl: AnimationController,
     private userStorageService: UserStorageService
-  ) {}
+  ) { }
 
-  async ngOnInit() {
-    // animación de entrada cuando se carga la página
-    setTimeout(() => {
-      this.playEnterAnimation();
-    }, 100);
-
+  ngOnInit() {
     // Mostrar estadísticas de usuarios en consola (para desarrollo)
-    await this.showUserStats();
+    this.showUserStats();
+  }
+
+  // Ionic lifecycle hook: se ejecuta cuando la vista ha entrado completamente
+  ionViewDidEnter() {
+    // limpiar el formulario cada vez que se entra a la vista
+    this.clearForm();
+    // animación de entrada
+    this.playEnterAnimation();
   }
 
   // animación de entradaa
   async playEnterAnimation() {
+    if (!this.logoContainer?.nativeElement || !this.formContainer?.nativeElement || !this.loginContainer?.nativeElement) {
+      console.warn('Elementos de animación no encontrados');
+      return;
+    }
+
     const logoAnimation = this.animationCtrl.create()
       .addElement(this.logoContainer.nativeElement)
       .duration(800)
@@ -76,6 +84,8 @@ export class LoginPage implements OnInit {
 
   // animación de salida
   async playExitAnimation(): Promise<void> {
+    if (!this.loginContainer?.nativeElement) return;
+
     const exitAnimation = this.animationCtrl.create()
       .addElement(this.loginContainer.nativeElement)
       .duration(500)
@@ -134,11 +144,11 @@ export class LoginPage implements OnInit {
     const emailValid = this.validateEmail();
     const passwordValid = this.validatePassword();
     let confirmPasswordValid = true;
-    
+
     if (this.isRegisterMode) {
       confirmPasswordValid = this.validateConfirmPassword();
     }
-    
+
     this.isFormValid = emailValid && passwordValid && confirmPasswordValid;
     return this.isFormValid;
   }
@@ -182,14 +192,14 @@ export class LoginPage implements OnInit {
       try {
         // Verificar credenciales con usuarios guardados
         const user = await this.userStorageService.validateUser(this.email, this.password);
-        
+
         // También permitir el usuario por defecto
         const isDefaultUser = this.email === 'seba@gmail.com' && this.password === '123456';
-        
+
         if (user || isDefaultUser) {
           // Guardar sesión activa
           await this.userStorageService.saveCurrentUser(this.email);
-          
+
           console.log('Login exitoso');
           // reproducir animación de salida antes de navegar
           await this.playExitAnimation();
@@ -264,13 +274,13 @@ export class LoginPage implements OnInit {
         this.isLoading = false;
         this.toastMessage = `¡Registro exitoso! Bienvenido ${this.email}`;
         this.isToastOpen = true;
-        
+
         // Cambiar a modo login después del registro exitoso
         setTimeout(() => {
           this.isRegisterMode = false;
           this.clearForm();
         }, 2000);
-        
+
       } catch (error) {
         this.isLoading = false;
         this.toastMessage = error instanceof Error ? error.message : 'Error al registrar usuario';
@@ -306,7 +316,7 @@ export class LoginPage implements OnInit {
       email: u.email,
       fechaRegistro: u.createdAt.toLocaleString()
     })));
-    
+
     if (users.length === 0) {
       this.toastMessage = 'No hay usuarios registrados';
     } else {

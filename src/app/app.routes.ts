@@ -26,8 +26,26 @@ export const routes: Routes = [
     canActivate: [guardGuard],
   },
   {
+    path: 'cart',
+    loadComponent: () => import('./cart/cart.page').then( m => m.CartPage),
+    canActivate: [guardGuard],
+  },
+  {
+    path: 'payment',
+    loadComponent: () => import('./payment/payment.page').then( m => m.PaymentPage),
+    canActivate: [guardGuard],
+  },
+  {
+    path: 'product/:id',
+    loadComponent: () => import('./product/product.page').then( m => m.ProductPage),
+    canActivate: [guardGuard],
+  },
+  {
     path: '**',
     redirectTo: 'login',
   },
-
 ];
+
+
+
+

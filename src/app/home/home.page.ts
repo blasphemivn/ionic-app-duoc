@@ -2,15 +2,16 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { UserStorageService } from '../services/user-storage.service';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons, AnimationController } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons, AnimationController, IonAvatar, ToastController, IonBadge } from '@ionic/angular/standalone';
 import { ProductsService, Product } from '../services/products.service';
+import { CartService } from '../services/cart.service';
 
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [CommonModule, DecimalPipe, RouterLink, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons],
+  imports: [CommonModule, DecimalPipe, RouterLink, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons, IonAvatar, IonBadge],
 })
 export class HomePage implements OnInit {
   @ViewChild('homeContainer', { read: ElementRef }) homeContainer!: ElementRef;
@@ -19,20 +20,32 @@ export class HomePage implements OnInit {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   searchTerm: string = '';
+  profilePhoto: string | null = null;
+  cartItemCount = 0;
 
   constructor(
     private animationCtrl: AnimationController,
     private router: Router,
     private userStorageService: UserStorageService,
-    private productsService: ProductsService
-  ) {}
+    private productsService: ProductsService,
+    private cartService: CartService,
+    private toastController: ToastController
+  ) { }
 
   ngOnInit() {
     this.loadProducts();
+    this.cartService.cart$.subscribe(cart => {
+      this.cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+    });
     // animación de entrada cuando se carga la página
     setTimeout(() => {
       this.playEnterAnimation();
     }, 100);
+  }
+
+  ionViewWillEnter() {
+    // Cargar foto de perfil cada vez que se entra a la vista
+    this.profilePhoto = localStorage.getItem('profilePhoto');
   }
 
   // cargar productos
@@ -54,7 +67,7 @@ export class HomePage implements OnInit {
   // filtrar productos por búsqueda
   onSearchChange(event: any) {
     this.searchTerm = event.detail.value.toLowerCase();
-    this.filteredProducts = this.products.filter(product => 
+    this.filteredProducts = this.products.filter(product =>
       product.name.toLowerCase().includes(this.searchTerm) ||
       product.category.toLowerCase().includes(this.searchTerm) ||
       product.description?.toLowerCase().includes(this.searchTerm)
@@ -76,15 +89,20 @@ export class HomePage implements OnInit {
   }
 
   // agregar al carrito 
-  addToCart(product: Product) {
-    console.log('Agregando al carrito:', product);
-    // aquí implementar la lógica del carrito
+  async addToCart(product: Product) {
+    this.cartService.addToCart(product);
+    const toast = await this.toastController.create({
+      message: `${product.name} agregado al carrito.`,
+      duration: 2000,
+      position: 'bottom',
+      color: 'success'
+    });
+    toast.present();
   }
 
   // ver detalles del producto
   viewProduct(product: Product) {
-    console.log('Ver producto:', product);
-    
+    this.router.navigate(['/product', product.id]);
   }
 
   // funcion trackBy para optimizar el rendimiento del ngFor

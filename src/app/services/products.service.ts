@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Capacitor } from '@capacitor/core';
 
@@ -40,6 +41,19 @@ export class ProductsService {
     const url = `${this.baseUrl}/products`;
     console.log('[ProductsService] GET', url);
     return this.http.get<Product[]>(url);
+  }
+
+  getProductById(id: number): Observable<Product> {
+    return this.getProducts().pipe(
+      map(products => {
+        const product = products.find(p => p.id === id);
+        if (product) {
+          return product;
+        } else {
+          throw new Error(`Product with id ${id} not found`);
+        }
+      })
+    );
   }
 }
 
