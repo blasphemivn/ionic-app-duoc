@@ -28,8 +28,25 @@ app.get('/api/products', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+const os = require('os');
+
+function getLocalIp() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return 'localhost';
+}
+
+app.listen(PORT, '0.0.0.0', () => {
+  const ip = getLocalIp();
   console.log(`API listening on http://localhost:${PORT}`);
+  console.log(`\nIMPORTANT: For physical devices, update src/environments/environment.ts with:`);
+  console.log(`apiBaseUrl: 'http://${ip}:${PORT}/api'\n`);
 });
 
 

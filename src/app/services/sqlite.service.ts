@@ -6,6 +6,7 @@ export interface User {
   id: string;
   email: string;
   password: string;
+  name?: string;
   createdAt: string;
 }
 
@@ -13,6 +14,7 @@ export interface UserWithDate {
   id: string;
   email: string;
   password: string;
+  name?: string;
   createdAt: Date;
 }
 
@@ -25,7 +27,7 @@ export class SqliteService {
   private readonly DB_VERSION = 1;
   private isNative = Capacitor.isNativePlatform();
 
-  constructor() { 
+  constructor() {
     console.log('📱 SQLite Service inicializado - Plataforma:', this.isNative ? 'Nativa' : 'Web');
     this.initializeDatabase();
   }
@@ -48,17 +50,17 @@ export class SqliteService {
   private async initializeNativeDB(): Promise<void> {
     try {
       const connection = new SQLiteConnection(CapacitorSQLite);
-      
+
       // verificar si la conexión ya existe
       const isConn = await connection.isConnection(this.DB_NAME, false);
-      
+
       if (!isConn.result) {
         // crear nueva conexión
         this.db = await connection.createConnection(
-          this.DB_NAME, 
-          false, 
-          'no-encryption', 
-          this.DB_VERSION, 
+          this.DB_NAME,
+          false,
+          'no-encryption',
+          this.DB_VERSION,
           false
         );
         await this.db.open();
@@ -69,6 +71,14 @@ export class SqliteService {
 
       // crear tabla de usuarios
       await this.createUsersTable();
+
+      // Intentar agregar la columna name si no existe (migración simple)
+      try {
+        await this.db.execute('ALTER TABLE users ADD COLUMN name TEXT;');
+      } catch (e) {
+        // Ignorar error si la columna ya existe
+      }
+
       console.log('✅ Base de datos SQLite nativa inicializada');
     } catch (error) {
       console.error('❌ Error al inicializar base de datos nativa:', error);
@@ -85,6 +95,7 @@ export class SqliteService {
         id TEXT PRIMARY KEY,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
+        name TEXT,
         createdAt TEXT NOT NULL
       );
     `;
@@ -135,6 +146,7 @@ export class SqliteService {
       id: this.generateId(),
       email: user.email,
       password: user.password,
+      name: user.name || '',
       createdAt: new Date().toISOString()
     };
 
@@ -151,11 +163,11 @@ export class SqliteService {
       await this.initializeDatabase();
     }
 
-    const insertSQL = `INSERT INTO users (id, email, password, createdAt) VALUES (?, ?, ?, ?);`;
+    const insertSQL = `INSERT INTO users (id, email, password, name, createdAt) VALUES (?, ?, ?, ?, ?);`;
 
     try {
       if (this.db) {
-        await this.db.run(insertSQL, [newUser.id, newUser.email, newUser.password, newUser.createdAt]);
+        await this.db.run(insertSQL, [newUser.id, newUser.email, newUser.password, newUser.name, newUser.createdAt]);
         console.log('✅ Usuario guardado (SQLite):', newUser.email);
       }
     } catch (error) {
@@ -164,6 +176,37 @@ export class SqliteService {
     }
 
     return newUser;
+  }
+
+  // actualizar nombre de usuario
+  async updateUser(email: string, name: string): Promise<boolean> {
+    if (!this.isNative) {
+      // web: localStorage
+      const users = await this.getUsers();
+      const userIndex = users.findIndex(u => u.email === email);
+      if (userIndex !== -1) {
+        users[userIndex].name = name;
+        localStorage.setItem('ionic_app_users', JSON.stringify(users));
+        return true;
+      }
+      return false;
+    }
+
+    if (!this.db) {
+      await this.initializeDatabase();
+    }
+
+    const updateSQL = `UPDATE users SET name = ? WHERE email = ?;`;
+
+    try {
+      if (this.db) {
+        const result = await this.db.run(updateSQL, [name, email]);
+        return (result.changes?.changes || 0) > 0;
+      }
+    } catch (error) {
+      console.error('❌ Error al actualizar usuario:', error);
+    }
+    return false;
   }
 
   // obtener usuario por email

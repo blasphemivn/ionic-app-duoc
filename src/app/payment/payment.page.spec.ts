@@ -3,8 +3,15 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { PaymentPage } from './payment.page';
 import { CartService } from '../services/cart.service';
-import { ToastController, AnimationController } from '@ionic/angular';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ToastController, AnimationController } from '@ionic/angular/standalone';
+import { NO_ERRORS_SCHEMA, ElementRef } from '@angular/core';
+import { addIcons } from 'ionicons';
+import { checkmarkCircleOutline } from 'ionicons/icons';
+
+// Register icons globally
+addIcons({
+  'checkmark-circle-outline': checkmarkCircleOutline
+});
 
 describe('PaymentPage', () => {
   let component: PaymentPage;
@@ -21,7 +28,7 @@ describe('PaymentPage', () => {
     const cartServiceSpy = jasmine.createSpyObj('CartService', ['clearCart']);
     const toastControllerSpy = jasmine.createSpyObj('ToastController', ['create']);
     const animationCtrlSpy = jasmine.createSpyObj('AnimationController', ['create']);
-    
+
     const mockAnimation = jasmine.createSpyObj('Animation', ['addElement', 'duration', 'fromTo', 'play']);
     mockAnimation.addElement.and.returnValue(mockAnimation);
     mockAnimation.duration.and.returnValue(mockAnimation);
@@ -77,7 +84,7 @@ describe('PaymentPage', () => {
       component.simulatePayment();
 
       expect(component.isLoading).toBeTrue();
-      
+
       tick(2000); // Fast-forward through the payment delay
 
       expect(component.isLoading).toBeFalse();
@@ -86,7 +93,7 @@ describe('PaymentPage', () => {
         message: '¡Pago realizado con éxito!',
         color: 'success'
       }));
-      
+
       tick(1000); // Fast-forward through the navigation delay
 
       expect(router.navigate).toHaveBeenCalledWith(['/home'], { replaceUrl: true });
@@ -95,16 +102,16 @@ describe('PaymentPage', () => {
     it('should play success animation on successful payment', fakeAsync(() => {
       component.selectedPaymentMethod = 'credit-card';
       // Manually create a mock element for the animation
-      const successEl = document.createElement('div');
-      component.successAnimationEl = { nativeElement: successEl };
-      
+      const successEl = new ElementRef(document.createElement('div'));
+      component.successAnimationEl = successEl;
+
       component.simulatePayment();
       tick(2000);
-      
-      fixture.detectChanges(); // To be sure the animation element is there
+
+      // fixture.detectChanges(); // Not needed if we manually set the property
 
       expect(animationCtrl.create).toHaveBeenCalled();
-      
+
       tick(1000);
     }));
   });

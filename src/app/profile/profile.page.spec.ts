@@ -1,86 +1,123 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProfilePage } from './profile.page';
 import { UserStorageService } from '../services/user-storage.service';
-import { Camera, PermissionStatus, Photo } from '@capacitor/camera';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CameraService } from '../services/camera.service';
+import { CameraResultType, CameraSource } from '@capacitor/camera';
+import { AlertController, ToastController } from '@ionic/angular/standalone';
+import { of } from 'rxjs';
+import { addIcons } from 'ionicons';
+import { pencilOutline, cameraOutline, logOutOutline, arrowBackOutline } from 'ionicons/icons';
+
+// Register icons globally
+addIcons({ pencilOutline, cameraOutline, logOutOutline, arrowBackOutline });
 
 describe('ProfilePage', () => {
   let component: ProfilePage;
   let fixture: ComponentFixture<ProfilePage>;
   let userStorageService: jasmine.SpyObj<UserStorageService>;
   let router: jasmine.SpyObj<Router>;
+  let cameraService: jasmine.SpyObj<CameraService>;
+  let alertController: jasmine.SpyObj<AlertController>;
+  let toastController: jasmine.SpyObj<ToastController>;
 
   beforeEach(async () => {
-    const userStorageServiceSpy = jasmine.createSpyObj('UserStorageService', ['getCurrentUser', 'clearCurrentUser']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const userStorageSpy = jasmine.createSpyObj('UserStorageService', ['getCurrentUser', 'clearCurrentUser', 'getUserByEmail', 'updateUser']);
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'], {
+      events: of()
+    });
+    const cameraServiceSpy = jasmine.createSpyObj('CameraService', ['checkPermissions', 'requestPermissions', 'getPhoto']);
+    const alertControllerSpy = jasmine.createSpyObj('AlertController', ['create']);
+    const toastControllerSpy = jasmine.createSpyObj('ToastController', ['create']);
+
+    // Mock return values
+    userStorageSpy.getCurrentUser.and.returnValue({ email: 'test@example.com', loginTime: new Date().toISOString() });
+    userStorageSpy.getUserByEmail.and.returnValue(Promise.resolve({ id: '1', email: 'test@example.com', password: '123', name: 'Test User', createdAt: new Date() }));
+    userStorageSpy.updateUser.and.returnValue(Promise.resolve(true));
+
+    const mockAlert = jasmine.createSpyObj('HTMLIonAlertElement', ['present']);
+    alertControllerSpy.create.and.returnValue(Promise.resolve(mockAlert));
+
+    const mockToast = jasmine.createSpyObj('HTMLIonToastElement', ['present']);
+    toastControllerSpy.create.and.returnValue(Promise.resolve(mockToast));
 
     await TestBed.configureTestingModule({
-      imports: [ProfilePage, RouterLink],
+      imports: [ProfilePage],
       providers: [
-        { provide: UserStorageService, useValue: userStorageServiceSpy },
+        { provide: UserStorageService, useValue: userStorageSpy },
         { provide: Router, useValue: routerSpy },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '' } } } }
-      ],
-      schemas: [NO_ERRORS_SCHEMA],
+        { provide: CameraService, useValue: cameraServiceSpy },
+        { provide: AlertController, useValue: alertControllerSpy },
+        { provide: ToastController, useValue: toastControllerSpy },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: () => '1'
+              }
+            }
+          }
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfilePage);
     component = fixture.componentInstance;
     userStorageService = TestBed.inject(UserStorageService) as jasmine.SpyObj<UserStorageService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-
-    // Default mocks
-    userStorageService.getCurrentUser.and.returnValue({ email: 'test@example.com', loginTime: new Date().toISOString() });
-    localStorage.clear();
-    spyOn(Camera, 'checkPermissions').and.resolveTo({ camera: 'granted', photos: 'granted' } as PermissionStatus);
-    spyOn(Camera, 'requestPermissions').and.resolveTo({ camera: 'granted', photos: 'granted' } as any);
-    spyOn(Camera, 'getPhoto').and.resolveTo({ webPath: 'new-photo.jpg', saved: true, format: 'jpeg' } as Photo);
+    cameraService = TestBed.inject(CameraService) as jasmine.SpyObj<CameraService>;
+    alertController = TestBed.inject(AlertController) as jasmine.SpyObj<AlertController>;
+    toastController = TestBed.inject(ToastController) as jasmine.SpyObj<ToastController>;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
-    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit', () => {
-    it('should load email and photo on init', fakeAsync(() => {
-      const photoUrl = 'test-photo.jpg';
-      localStorage.setItem('profilePhoto', photoUrl);
-      
-      component.ngOnInit();
-      tick();
-
-      expect(component.email).toBe('test@example.com');
-      expect(component.photoUrl()).toBe(photoUrl);
-    }));
+  it('should load user data on init', async () => {
+    await component.ngOnInit();
+    expect(component.email).toBe('test@example.com');
+    expect(component.name).toBe('Test User');
+    expect(userStorageService.getUserByEmail).toHaveBeenCalledWith('test@example.com');
   });
 
-  describe('changePhoto', () => {
-    it('should change photo successfully', fakeAsync(() => {
-      component.changePhoto();
-      tick();
-
-      expect(component.photoUrl()).toBe('new-photo.jpg');
-      expect(localStorage.getItem('profilePhoto')).toBe('new-photo.jpg');
-    }));
-
-    it('should request permissions if not granted', fakeAsync(() => {
-        (Camera.checkPermissions as jasmine.Spy).and.resolveTo({ camera: 'denied', photos: 'denied' } as PermissionStatus);
-      
-        component.changePhoto();
-        tick();
-  
-        expect(Camera.requestPermissions).toHaveBeenCalled();
-      }));
+  it('should logout', () => {
+    component.logout();
+    expect(userStorageService.clearCurrentUser).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/login'], { replaceUrl: true });
   });
 
-  describe('logout', () => {
-    it('should clear user and navigate to login', () => {
-      component.logout();
-      expect(userStorageService.clearCurrentUser).toHaveBeenCalled();
-      expect(router.navigate).toHaveBeenCalledWith(['/login'], { replaceUrl: true });
-    });
+  it('should change photo successfully', async () => {
+    cameraService.checkPermissions.and.returnValue(Promise.resolve({ camera: 'granted', photos: 'granted' } as any));
+    cameraService.getPhoto.and.returnValue(Promise.resolve({ webPath: 'test-path' } as any));
+
+    await component.changePhoto();
+
+    expect(component.photoUrl()).toBe('test-path');
+  });
+
+  it('should request permissions if not granted', async () => {
+    cameraService.checkPermissions.and.returnValue(Promise.resolve({ camera: 'denied', photos: 'denied' } as any));
+    cameraService.requestPermissions.and.returnValue(Promise.resolve({ camera: 'granted', photos: 'granted' } as any));
+    cameraService.getPhoto.and.returnValue(Promise.resolve({ webPath: 'test-path' } as any));
+
+    await component.changePhoto();
+
+    expect(cameraService.requestPermissions).toHaveBeenCalled();
+    expect(component.photoUrl()).toBe('test-path');
+  });
+
+  it('should throw error if permissions denied', async () => {
+    cameraService.checkPermissions.and.returnValue(Promise.resolve({ camera: 'denied', photos: 'denied' } as any));
+    cameraService.requestPermissions.and.returnValue(Promise.resolve({ camera: 'denied', photos: 'denied' } as any));
+
+    await expectAsync(component.changePhoto()).toBeRejectedWithError('Permisos de cámara/galería denegados');
+  });
+
+  it('should open edit name alert', async () => {
+    await component.editName();
+    expect(alertController.create).toHaveBeenCalled();
   });
 });

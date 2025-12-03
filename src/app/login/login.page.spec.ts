@@ -1,9 +1,10 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { AnimationController } from '@ionic/angular';
+import { AnimationController } from '@ionic/angular/standalone';
 import { LoginPage } from './login.page';
 import { UserStorageService } from '../services/user-storage.service';
 import { provideRouter } from '@angular/router';
+import { ElementRef } from '@angular/core';
 
 describe('LoginPage', () => {
   let component: LoginPage;
@@ -276,7 +277,7 @@ describe('LoginPage', () => {
       component.password = '123456';
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.validateUser.and.returnValue(Promise.resolve(null));
-      
+
       component.login();
       expect(component.isLoading).toBe(true);
       tick(1500);
@@ -288,10 +289,10 @@ describe('LoginPage', () => {
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component, 'playExitAnimation').and.returnValue(Promise.resolve());
       userStorageService.validateUser.and.returnValue(Promise.resolve(null));
-      
+
       component.login();
       tick(1500);
-      
+
       expect(userStorageService.saveCurrentUser).toHaveBeenCalledWith('seba@gmail.com');
       expect(component.playExitAnimation).toHaveBeenCalled();
       expect(router.navigateByUrl).toHaveBeenCalledWith('/home');
@@ -304,16 +305,16 @@ describe('LoginPage', () => {
         password: '123456',
         createdAt: new Date()
       };
-      
+
       component.email = 'test@example.com';
       component.password = '123456';
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component, 'playExitAnimation').and.returnValue(Promise.resolve());
       userStorageService.validateUser.and.returnValue(Promise.resolve(mockUser as any));
-      
+
       component.login();
       tick(1500);
-      
+
       expect(userStorageService.saveCurrentUser).toHaveBeenCalledWith('test@example.com');
       expect(component.playExitAnimation).toHaveBeenCalled();
       expect(router.navigateByUrl).toHaveBeenCalledWith('/home');
@@ -324,10 +325,10 @@ describe('LoginPage', () => {
       component.password = 'wrongpassword';
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.validateUser.and.returnValue(Promise.resolve(null));
-      
+
       component.login();
       tick(1500);
-      
+
       expect(component.isLoading).toBe(false);
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toBe('Credenciales incorrectas');
@@ -339,12 +340,12 @@ describe('LoginPage', () => {
       component.password = '123456';
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.validateUser.and.returnValue(Promise.reject(new Error('Database error')));
-      
+
       // Capturar errores no manejados
       spyOn(console, 'error');
-      
+
       await component.login();
-      
+
       // Since login has a setTimeout, we need to wait for it to complete
       await new Promise(resolve => setTimeout(resolve, 1600));
 
@@ -373,7 +374,7 @@ describe('LoginPage', () => {
       component.confirmPassword = '123456';
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.emailExists.and.returnValue(Promise.resolve(false));
-      
+
       component.register();
       expect(component.isLoading).toBe(true);
       tick(1500);
@@ -386,10 +387,10 @@ describe('LoginPage', () => {
       component.confirmPassword = '123456';
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.emailExists.and.returnValue(Promise.resolve(true));
-      
+
       component.register();
       tick(1500);
-      
+
       expect(component.isLoading).toBe(false);
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toBe('Este email ya está registrado');
@@ -403,7 +404,7 @@ describe('LoginPage', () => {
         password: '123456',
         createdAt: new Date()
       };
-      
+
       component.isRegisterMode = true;
       component.email = 'newuser@example.com';
       component.password = '123456';
@@ -411,10 +412,10 @@ describe('LoginPage', () => {
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.emailExists.and.returnValue(Promise.resolve(false));
       userStorageService.saveUser.and.returnValue(Promise.resolve(mockUser as any));
-      
+
       component.register();
       tick(1500);
-      
+
       expect(userStorageService.saveUser).toHaveBeenCalledWith({
         email: 'newuser@example.com',
         password: '123456'
@@ -422,7 +423,7 @@ describe('LoginPage', () => {
       expect(component.isLoading).toBe(false);
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toContain('¡Registro exitoso!');
-      
+
       tick(2000);
       expect(component.isRegisterMode).toBe(false);
     }));
@@ -435,15 +436,15 @@ describe('LoginPage', () => {
       spyOn(component, 'validateForm').and.returnValue(true);
       userStorageService.emailExists.and.returnValue(Promise.resolve(false));
       userStorageService.saveUser.and.returnValue(Promise.reject(new Error('Save error')));
-      
+
       // Capturar errores no manejados
       spyOn(console, 'error');
-      
+
       await component.register();
 
       // Since register has a setTimeout, we need to wait for it to complete
       await new Promise(resolve => setTimeout(resolve, 1600));
-      
+
       expect(component.isLoading).toBe(false);
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toBe('Save error');
@@ -477,9 +478,9 @@ describe('LoginPage', () => {
       component.passwordError = 'Error';
       component.confirmPasswordError = 'Error';
       component.isFormValid = true;
-      
+
       component.clearForm();
-      
+
       expect(component.email).toBe('');
       expect(component.password).toBe('');
       expect(component.confirmPassword).toBe('');
@@ -497,7 +498,7 @@ describe('LoginPage', () => {
     });
   });
 
-  /*describe('Animaciones', () => {
+  describe('Animaciones', () => {
     beforeEach(() => {
       // Resetear el spy antes de cada prueba
       animationCtrl.create.calls.reset();
@@ -505,12 +506,13 @@ describe('LoginPage', () => {
 
     it('should create and play enter animation', async () => {
       // Simular elementos del DOM
-      component.logoContainer = { nativeElement: document.createElement('div') } as any;
-      component.formContainer = { nativeElement: document.createElement('div') } as any;
-      component.loginContainer = { nativeElement: document.createElement('div') } as any;
-      
+      const mockElement = new ElementRef(document.createElement('div'));
+      component.logoContainer = mockElement;
+      component.formContainer = mockElement;
+      component.loginContainer = mockElement;
+
       await component.playEnterAnimation();
-      
+
       expect(animationCtrl.create).toHaveBeenCalled();
     }, 10000); // Aumentar timeout a 10 segundos
 
@@ -518,43 +520,43 @@ describe('LoginPage', () => {
       component.logoContainer = null as any;
       component.formContainer = null as any;
       component.loginContainer = null as any;
-      
+
       spyOn(console, 'warn');
-      
+
       await component.playEnterAnimation();
-      
+
       // No debería lanzar error y no debería llamar a create cuando faltan elementos
       expect(component).toBeTruthy();
       expect(console.warn).toHaveBeenCalledWith('Elementos de animación no encontrados');
     });
 
     it('should create and play exit animation', async () => {
-      component.loginContainer = { nativeElement: document.createElement('div') } as any;
-      
+      component.loginContainer = new ElementRef(document.createElement('div'));
+
       await component.playExitAnimation();
-      
+
       expect(animationCtrl.create).toHaveBeenCalled();
     });
 
     it('should handle missing container in exit animation', async () => {
       component.loginContainer = null as any;
-      
+
       await component.playExitAnimation();
-      
+
       // No debería lanzar error y no debería llamar a create cuando el container es null
       expect(component).toBeTruthy();
       // No esperamos que se llame create cuando el container es null
       expect(animationCtrl.create).not.toHaveBeenCalled();
     });
-  });*/
+  });
 
   describe('Métodos de Desarrollo', () => {
     it('should show user stats', async () => {
       const mockStats = { totalUsers: 5, lastRegistered: new Date() };
       userStorageService.getUserStats.and.returnValue(Promise.resolve(mockStats));
-      
+
       await component.showUserStats();
-      
+
       expect(userStorageService.getUserStats).toHaveBeenCalled();
     });
 
@@ -564,9 +566,9 @@ describe('LoginPage', () => {
         { id: 2, email: 'user2@example.com', password: 'pass', createdAt: new Date() }
       ];
       userStorageService.getUsers.and.returnValue(Promise.resolve(mockUsers as any));
-      
+
       await component.showRegisteredUsers();
-      
+
       expect(userStorageService.getUsers).toHaveBeenCalled();
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toContain('2 usuarios registrados');
@@ -574,9 +576,9 @@ describe('LoginPage', () => {
 
     it('should show message when no users are registered', async () => {
       userStorageService.getUsers.and.returnValue(Promise.resolve([]));
-      
+
       await component.showRegisteredUsers();
-      
+
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toBe('No hay usuarios registrados');
     });
@@ -584,9 +586,9 @@ describe('LoginPage', () => {
     it('should clear all users after confirmation', async () => {
       spyOn(window, 'confirm').and.returnValue(true);
       userStorageService.clearAllUsers.and.returnValue(Promise.resolve());
-      
+
       await component.clearAllUsers();
-      
+
       expect(userStorageService.clearAllUsers).toHaveBeenCalled();
       expect(component.isToastOpen).toBe(true);
       expect(component.toastMessage).toBe('Todos los usuarios han sido eliminados');
@@ -594,9 +596,9 @@ describe('LoginPage', () => {
 
     it('should not clear users if confirmation is cancelled', async () => {
       spyOn(window, 'confirm').and.returnValue(false);
-      
+
       await component.clearAllUsers();
-      
+
       expect(userStorageService.clearAllUsers).not.toHaveBeenCalled();
     });
   });

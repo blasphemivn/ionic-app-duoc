@@ -4,6 +4,18 @@ import { of } from 'rxjs';
 import { CartPage } from './cart.page';
 import { CartService } from '../services/cart.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { addIcons } from 'ionicons';
+import { trashOutline, removeOutline, addOutline, trashBinOutline, cartOutline, arrowBackOutline } from 'ionicons/icons';
+
+// Register icons globally
+addIcons({
+  'trash-outline': trashOutline,
+  'remove-outline': removeOutline,
+  'add-outline': addOutline,
+  'trash-bin-outline': trashBinOutline,
+  'cart-outline': cartOutline,
+  'arrow-back-outline': arrowBackOutline
+});
 
 describe('CartPage', () => {
   let component: CartPage;

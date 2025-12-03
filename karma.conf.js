@@ -34,6 +34,14 @@ module.exports = function (config) {
         { type: 'text-summary' }
       ]
     },
+    files: [
+      { pattern: 'src/assets/**/*', watched: false, included: false, served: true, nocache: false },
+      { pattern: 'node_modules/ionicons/dist/ionicons/ionicons.svg', watched: false, included: false, served: true, nocache: false }
+    ],
+    proxies: {
+      '/assets/': '/base/src/assets/',
+      '/svg/': '/base/node_modules/ionicons/dist/ionicons/'
+    },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,

@@ -72,6 +72,11 @@ export class UserStorageService {
     return await this.sqliteService.getUserStats();
   }
 
+  // Actualizar nombre de usuario
+  async updateUser(email: string, name: string): Promise<boolean> {
+    return await this.sqliteService.updateUser(email, name);
+  }
+
   // Métodos para manejar la sesión del usuario actual
   async saveCurrentUser(email: string): Promise<void> {
     await this.sqliteService.saveCurrentUser(email);

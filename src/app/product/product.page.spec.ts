@@ -4,8 +4,15 @@ import { of, throwError } from 'rxjs';
 import { ProductPage } from './product.page';
 import { ProductsService, Product } from '../services/products.service';
 import { CartService } from '../services/cart.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular/standalone';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { addIcons } from 'ionicons';
+import { cartOutline } from 'ionicons/icons';
+
+// Register icons globally
+addIcons({
+  'cart-outline': cartOutline
+});
 
 describe('ProductPage', () => {
   let component: ProductPage;
@@ -87,8 +94,8 @@ describe('ProductPage', () => {
 
   describe('addToCart', () => {
     beforeEach(() => {
-        productsService.getProductById.and.returnValue(of(mockProduct));
-        fixture.detectChanges();
+      productsService.getProductById.and.returnValue(of(mockProduct));
+      fixture.detectChanges();
     });
 
     it('should add product to cart and show toast', async () => {
@@ -103,10 +110,10 @@ describe('ProductPage', () => {
     });
 
     it('should not add to cart if product is not defined', async () => {
-        component.product = undefined;
-        await component.addToCart();
-        expect(cartService.addToCart).not.toHaveBeenCalled();
-        expect(toastController.create).not.toHaveBeenCalled();
-      });
+      component.product = undefined;
+      await component.addToCart();
+      expect(cartService.addToCart).not.toHaveBeenCalled();
+      expect(toastController.create).not.toHaveBeenCalled();
+    });
   });
 });

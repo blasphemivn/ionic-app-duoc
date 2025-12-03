@@ -84,6 +84,14 @@ describe('PassRecoverPage', () => {
       
       expect(component.isFormValid).toBe(true);
     });
+
+    it('should mark form as invalid when email is invalid', () => {
+      component.email = 'invalid-email';
+      component.name = 'John Doe';
+      component.phone = '12345678';
+      component.validateForm();
+      expect(component.isFormValid).toBe(false);
+    });
   });
 
   describe('Form Interaction', () => {

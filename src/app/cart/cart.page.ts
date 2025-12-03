@@ -20,36 +20,44 @@ export class CartPage implements OnInit {
   constructor(private cartService: CartService, private router: Router) { }
 
   ngOnInit() {
+    // Suscribirse a los cambios del carrito para actualizar la lista y el total
     this.cartService.cart$.subscribe(cart => {
       this.cartItems = cart;
       this.calculateTotal();
     });
   }
 
+  // Calcular el total de la compra sumando precio * cantidad de cada item
   calculateTotal() {
     this.total = this.cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   }
 
+  // Eliminar un producto del carrito
   removeFromCart(item: CartItem) {
     this.cartService.removeItem(item);
   }
 
+  // Aumentar la cantidad de un producto
   increaseQuantity(item: CartItem) {
     this.cartService.increaseQuantity(item);
   }
 
+  // Disminuir la cantidad de un producto
   decreaseQuantity(item: CartItem) {
     this.cartService.decreaseQuantity(item);
   }
 
+  // Vaciar todo el carrito
   clearCart() {
     this.cartService.clearCart();
   }
 
+  // Ir a la página de pago
   checkout() {
     this.router.navigate(['/payment']);
   }
 
+  // Volver a la página de inicio
   goBack() {
     this.router.navigate(['/home']);
   }

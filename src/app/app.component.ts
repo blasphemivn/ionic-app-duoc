@@ -3,6 +3,8 @@ import { IonApp, IonRouterOutlet, Platform } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { App } from '@capacitor/app';
 import { Location } from '@angular/common';
+import { addIcons } from 'ionicons';
+import { hardwareChipOutline, cartOutline, arrowBackOutline, cameraOutline, logOutOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +16,15 @@ export class AppComponent implements OnInit {
     private platform: Platform,
     private router: Router,
     private location: Location
-  ) {}
+  ) {
+    addIcons({
+      'hardware-chip': hardwareChipOutline,
+      'cart-outline': cartOutline,
+      'arrow-back-outline': arrowBackOutline,
+      'camera-outline': cameraOutline,
+      'log-out-outline': logOutOutline,
+    });
+  }
 
   ngOnInit() {
     this.platform.backButton.subscribeWithPriority(10, (processNextHandler) => {

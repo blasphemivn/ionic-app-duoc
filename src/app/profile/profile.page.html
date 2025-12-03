@@ -21,6 +21,15 @@
   <ion-list>
     <ion-item>
       <ion-label>
+        <h2>Nombre</h2>
+        <p>{{ name }}</p>
+      </ion-label>
+      <ion-button slot="end" fill="clear" (click)="editName()">
+        <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-label>
         <h2>Email</h2>
         <p>{{ email }}</p>
       </ion-label>
