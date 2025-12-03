@@ -17,7 +17,13 @@ export interface Product {
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
+  private apiUrlOverride: string | null = localStorage.getItem('api_url_override');
+
   private get baseUrl(): string {
+    if (this.apiUrlOverride) {
+      return this.apiUrlOverride;
+    }
+
     const base = environment.apiBaseUrl;
     if (Capacitor.getPlatform() === 'android') {
       try {
@@ -35,11 +41,28 @@ export class ProductsService {
     return base;
   }
 
-  constructor(private http: HttpClient) {}
+  setApiUrl(url: string) {
+    if (url) {
+      this.apiUrlOverride = url.replace(/\/$/, ''); // remove trailing slash
+      localStorage.setItem('api_url_override', this.apiUrlOverride);
+    } else {
+      this.apiUrlOverride = null;
+      localStorage.removeItem('api_url_override');
+    }
+  }
+
+  getCurrentUrl(): string {
+    return this.baseUrl;
+  }
+
+  constructor(private http: HttpClient) { }
 
   getProducts(): Observable<Product[]> {
     const url = `${this.baseUrl}/products`;
-    console.log('[ProductsService] GET', url);
+    const platform = Capacitor.getPlatform();
+    console.log('[ProductsService] Platform:', platform);
+    console.log('[ProductsService] Base URL from environment:', environment.apiBaseUrl);
+    console.log('[ProductsService] Final URL:', url);
     return this.http.get<Product[]>(url);
   }
 

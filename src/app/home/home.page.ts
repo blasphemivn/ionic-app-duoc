@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { UserStorageService } from '../services/user-storage.service';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons, AnimationController, IonAvatar, ToastController, IonBadge } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonImg, IonButton, IonGrid, IonRow, IonCol, IonSearchbar, IonRefresher, IonRefresherContent, IonButtons, AnimationController, IonAvatar, ToastController, AlertController, IonBadge } from '@ionic/angular/standalone';
 import { ProductsService, Product } from '../services/products.service';
 import { CartService } from '../services/cart.service';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class HomePage implements OnInit {
     private userStorageService: UserStorageService,
     private productsService: ProductsService,
     private cartService: CartService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
@@ -49,19 +51,82 @@ export class HomePage implements OnInit {
   }
 
   // cargar productos
-  loadProducts() {
+  async loadProducts() {
     this.productsService.getProducts().subscribe({
       next: (products) => {
         console.log('[HomePage] productos recibidos:', products?.length);
         this.products = products;
         this.filteredProducts = [...this.products];
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Error cargando productos desde la API', err);
-        this.products = [];
-        this.filteredProducts = [];
+        const currentUrl = this.productsService.getCurrentUrl();
+
+        // Mostrar mensaje de error al usuario
+        const toast = await this.toastController.create({
+          header: 'Error de Conexión',
+          message: `No se pudo conectar a: ${currentUrl}\nError: ${err.statusText || 'Desconocido'} (${err.status})`,
+          duration: 10000, // Durar más para que puedan leer
+          position: 'bottom',
+          color: 'danger',
+          buttons: [
+            {
+              text: 'Configurar IP',
+              handler: () => {
+                this.changeApiUrl();
+              }
+            },
+            {
+              text: 'Reintentar',
+              role: 'cancel',
+              handler: () => {
+                this.loadProducts();
+              }
+            }
+          ]
+        });
+        toast.present();
       }
     });
+  }
+
+  async changeApiUrl() {
+    const alert = await this.alertController.create({
+      header: 'Configurar API URL',
+      inputs: [
+        {
+          name: 'url',
+          type: 'url',
+          placeholder: 'http://192.168.x.x:3000/api',
+          value: this.productsService.getCurrentUrl()
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Guardar',
+          handler: (data: any) => {
+            if (data.url) {
+              this.productsService.setApiUrl(data.url);
+              // Recargar productos con la nueva URL
+              this.loadProducts();
+
+              // Mostrar confirmación
+              this.toastController.create({
+                message: 'URL actualizada correctamente',
+                duration: 2000,
+                color: 'success'
+              }).then(t => t.present());
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   // filtrar productos por búsqueda

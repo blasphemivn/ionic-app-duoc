@@ -13,6 +13,9 @@
       MORK TEC
     </ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="changeApiUrl()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
       <ion-button routerLink="/cart">
         <ion-icon name="cart-outline"></ion-icon>
         <ion-badge color="danger" *ngIf="cartItemCount > 0">{{ cartItemCount }}</ion-badge>

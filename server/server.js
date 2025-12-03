@@ -44,9 +44,16 @@ function getLocalIp() {
 
 app.listen(PORT, '0.0.0.0', () => {
   const ip = getLocalIp();
-  console.log(`API listening on http://localhost:${PORT}`);
-  console.log(`\nIMPORTANT: For physical devices, update src/environments/environment.ts with:`);
-  console.log(`apiBaseUrl: 'http://${ip}:${PORT}/api'\n`);
+  console.log('\n' + '='.repeat(60));
+  console.log('🚀 SERVIDOR API INICIADO');
+  console.log('='.repeat(60));
+  console.log(`📍 Local:    http://localhost:${PORT}`);
+  console.log(`🌐 Red:      http://${ip}:${PORT}`);
+  console.log('='.repeat(60));
+  console.log('\n📱 Para usar en dispositivo móvil:');
+  console.log(`   Actualiza src/environments/environment.ts con:`);
+  console.log(`   apiBaseUrl: 'http://${ip}:${PORT}/api'`);
+  console.log('\n' + '='.repeat(60) + '\n');
 });
 
 
